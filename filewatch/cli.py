@@ -15,36 +15,14 @@ import pathlib
 import datetime
 import subprocess
 
+from filewatch import logger, utils
+from filewatch.__version__ import __version__
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
-__version__ = "0.0.1"
-
-
 CLEAR = "clr" if sys.platform.startswith("win") else "clear"
-
-
-RED = "\033[91m"
-YELLOW = "\033[93m"
-GREEN = "\033[92m"
-RESET = "\033[0m"
-
-
-def error(message):
-    print(f"{RED}{message}{RESET}", file=sys.stderr)
-
-
-def warning(message):
-    print(f"{YELLOW}{message}{RESET}", file=sys.stderr)
-
-
-def info(message):
-    print(f"{message}", file=sys.stderr)
-
-
-def success(message):
-    print(f"{GREEN}{message}{RESET}", file=sys.stderr)
 
 
 class EventHandler(FileSystemEventHandler):
@@ -55,7 +33,7 @@ class EventHandler(FileSystemEventHandler):
 
     def run(self):
         os.system(CLEAR)
-        success(datetime.datetime.now())
+        logger.success(datetime.datetime.now())
 
         # no command given to run
         if len(self.cmd) == 0:
@@ -72,38 +50,27 @@ class EventHandler(FileSystemEventHandler):
                 stderr=sys.stderr,
             )
         except FileNotFoundError:
-            error(f"Unknown command: {self.cmd[0]}")
+            logger.error(f"Unknown command: {self.cmd[0]}")
 
     def on_any_event(self, event):
         self.run()
 
 
-def split_list(predicate, iterable):
-    group = []
-    for i in iterable:
-        if predicate(i):
-            yield group
-            group = []
-            continue
-
-        group.append(i)
-
-    yield group
-
-
 def main():
-    if len(sys.argv) == 2 and sys.argv[1] in {"-h", "--help"}:
+    args = sys.argv[1:]
+
+    if len(args) == 1 and args[0] in {"-h", "--help"}:
         print(__doc__)
         sys.exit(0)
 
-    if len(sys.argv) == 2 and sys.argv[1] in {"-v", "--version"}:
+    if len(args) == 1 and args[0] in {"-v", "--version"}:
         print(__version__)
         sys.exit(0)
 
     try:
-        paths, command = split_list(lambda i: i == "--", sys.argv[1:])
+        paths, command = utils.split_iterable(lambda i: i == "--", args)
     except ValueError:
-        info(__doc__)
+        logger.info(__doc__)
         sys.exit(1)
 
     event_handler = EventHandler(command)
@@ -113,7 +80,7 @@ def main():
         p = pathlib.Path(p)
 
         if not p.exists():
-            error(f"file/directory does not exist: {p}")
+            logger.error(f"file/directory does not exist: {p}")
             sys.exit(1)
 
         observer.schedule(event_handler, p, recursive=True)

@@ -1,0 +1,140 @@
+name: Cross-Platform Pipenv Lock
+on:
+  push:
+    branches:
+      - '*'
+    paths:
+      - .github/workflows/cross-platform-lock.yml
+      - Pipfile.lock
+
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  prepare:
+    name: Prepare Lock
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Save Lock
+        uses: actions/upload-artifact@v2
+        with:
+          name: pipfile-lock
+          path: Pipfile.lock
+          if-no-files-found: error
+          retention-days: 1
+
+  windows_lock:
+    name: Windows Lock
+    runs-on: windows-latest
+    needs: [prepare]
+    env:
+      PIPENV_VENV_IN_PROJECT: true
+      PIPENV_IGNORE_VIRTUALENVS: true
+      PIPENV_TIMEOUT: 60000
+      PYTHONPATH: ${{ github.workspace }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Load Lock
+        uses: actions/download-artifact@v2
+        with:
+          name: pipfile-lock
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install pipenv
+      - run: pipenv upgrade --dev
+      - name: Save Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: pipfile-lock
+          path: Pipfile.lock
+          if-no-files-found: error
+          retention-days: 1
+
+  ubuntu_lock:
+    name: Ubuntu Lock
+    runs-on: ubuntu-latest
+    needs: [windows_lock]
+    if: ${{ always() && github.event.inputs.lock_ubuntu != 'false' }}
+    env:
+      PIPENV_VENV_IN_PROJECT: true
+      PIPENV_IGNORE_VIRTUALENVS: true
+      PIPENV_TIMEOUT: 60000
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Load Lock
+        uses: actions/download-artifact@v2
+        with:
+          name: pipfile-lock
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install pipenv
+      - run: pipenv upgrade --dev
+      - name: Save Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: pipfile-lock
+          path: Pipfile.lock
+          if-no-files-found: error
+          retention-days: 1
+
+  macos_lock:
+    name: macOS Lock
+    runs-on: macos-latest
+    needs: [ubuntu_lock]
+    env:
+      PIPENV_VENV_IN_PROJECT: true
+      PIPENV_IGNORE_VIRTUALENVS: true
+      PIPENV_TIMEOUT: 60000
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Load Lock
+        uses: actions/download-artifact@v2
+        with:
+          name: pipfile-lock
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: pip install pipenv
+      - run: pipenv upgrade --dev
+      - name: Save Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: pipfile-lock
+          path: Pipfile.lock
+          if-no-files-found: error
+          retention-days: 1
+
+  commit_lock:
+    name: Commit Lock
+    needs: [windows_lock, ubuntu_lock, macos_lock]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Load Lock
+        uses: actions/download-artifact@v2
+        with:
+          name: pipfile-lock
+      - name: Commit
+        uses: EndBug/add-and-commit@v7 # You can change this to use a specific version
+        with:
+          add: 'Pipfile.lock'
+          author_name: Workflow Action CI
+          message: 'CI: Cross-Platform Pipfile.lock'
