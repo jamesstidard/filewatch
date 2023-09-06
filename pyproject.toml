@@ -12,7 +12,7 @@ authors = [{name="James Stidard", email="james@stidard.com" }]
 description = "A cli utility to watch files or directories and run a command on any changes."
 readme = "README.md"
 dependencies = ["watchdog"]
-requires-python = ">=3.6"
+requires-python = ">=3.8"
 
 [project.scripts]
 filewatch = "filewatch.cli:main"
