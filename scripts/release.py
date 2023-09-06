@@ -3,7 +3,7 @@ import sys
 import pathlib
 import subprocess
 
-from filewatch.utils import logger
+from filewatch import logger
 
 HERE = pathlib.Path(__file__)
 PYPROJECT_FP = HERE.parent.parent / "pyproject.toml"

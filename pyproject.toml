@@ -7,7 +7,7 @@ known_first_party = ["my_module1", "my_module2"]
 
 [project]
 name = "filewatch"
-version = "0.0.1"
+version = "0.0.2"
 authors = [{name="James Stidard", email="james@stidard.com" }]
 description = "A cli utility to watch files or directories and run a command on any changes."
 readme = "README.md"
