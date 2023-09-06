@@ -16,4 +16,3 @@ requires-python = ">=3.6"
 
 [project.scripts]
 filewatch = "filewatch.cli:main"
-release = "python scripts/release.py"
