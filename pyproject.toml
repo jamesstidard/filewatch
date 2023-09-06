@@ -5,5 +5,14 @@ length_sort = true
 include_trailing_comma = true
 known_first_party = ["my_module1", "my_module2"]
 
+[project]
+name = "filewatch"
+version = "0.0.1"
+authors = [{name="James Stidard", email="james@stidard.com" }]
+description = "A cli utility to watch files or directories and run a command on any changes."
+readme = "README.md"
+dependencies = ["watchdog"]
+requires-python = ">=3.6"
+
 [project.scripts]
-filewatch = "main:main"
+filewatch = "filewatch.cli:main"
