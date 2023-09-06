@@ -27,3 +27,11 @@ $ filewatch /path/to/some/folder -- say "folder changed"
 # Watch multiple folders / files and announce change over speakers (macOS)
 $ filewatch /path/to/some/folder main.py some/other/path -- echo "changed"
 ```
+
+## Development Notes
+Release with:
+
+```
+# where x.y.z is the new release version
+$ pipenv run release x.y.z
+```
