@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Save Lock
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pipfile-lock
           path: Pipfile.lock
@@ -43,7 +43,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Load Lock
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pipfile-lock
       - name: Install Python
@@ -53,7 +53,7 @@ jobs:
       - run: pip install pipenv
       - run: pipenv upgrade --dev
       - name: Save Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pipfile-lock
           path: Pipfile.lock
@@ -74,7 +74,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Load Lock
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pipfile-lock
       - name: Install Python
@@ -84,7 +84,7 @@ jobs:
       - run: pip install pipenv
       - run: pipenv upgrade --dev
       - name: Save Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pipfile-lock
           path: Pipfile.lock
@@ -104,7 +104,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Load Lock
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pipfile-lock
       - name: Install Python
@@ -114,7 +114,7 @@ jobs:
       - run: pip install pipenv
       - run: pipenv upgrade --dev
       - name: Save Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: pipfile-lock
           path: Pipfile.lock
@@ -127,13 +127,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Load Lock
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: pipfile-lock
       - name: Commit
-        uses: EndBug/add-and-commit@v7 # You can change this to use a specific version
+        uses: EndBug/add-and-commit@v9 # You can change this to use a specific version
         with:
           add: 'Pipfile.lock'
           author_name: Workflow Action CI
